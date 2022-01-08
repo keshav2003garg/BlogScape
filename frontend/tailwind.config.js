@@ -5,9 +5,14 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        ubuntu: "'Ubuntu', sans-serif"
+        josefin: "'Josefin Sans', sans-serif",
+        lora: "'Lora', serif",
+        varela: "'Varela', sans-serif",
+        varelaRound: "'Varela Round', sans-serif",
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp')
+  ],
 }
