@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navbar = ({ isAuthenticated, handleLogout }) => {
+    const { userDetails } = useSelector(state => state.user);
+    const { avatar, socials } = userDetails.userDetail;
     return (
         <nav className='w-full h-[48px] flex sticky top-0 font-josefin'>
             <div className='flex-[3] flex-center icon-styling-container'>
                 {isAuthenticated == false || isAuthenticated == undefined ?
                     null :
                     <>
-                        <i className="fab fa-facebook"></i>
-                        <i className="fab fa-twitter"></i>
-                        <i className="fab fa-pinterest"></i>
-                        <i className="fab fa-instagram"></i>
+                        {socials.facebook == '' ? null : <a href={socials.facebook} target='_blank'><i className="fab fa-facebook"></i></a>}
+                        {socials.twitter == '' ? null : <a href={socials.twitter} target='_blank'><i className="fab fa-twitter"></i></a>}
+                        {socials.pinterest == '' ? null : <a href={socials.pinterest} target='_blank'><i className="fab fa-pinterest"></i></a>}
+                        {socials.instagram == '' ? null : <a href={socials.instagram} target='_blank'><i className="fab fa-instagram"></i></a>}
                     </>
                 }
             </div>
@@ -37,11 +40,12 @@ const Navbar = ({ isAuthenticated, handleLogout }) => {
                     null
                     :
                     <>
-                        < img className='mr-5 w-12 rounded-full' src="https://randomuser.me/api/portraits/thumb/men/7.jpg" />
+                        {!avatar.url ? null : <Link to='/me'>< img className='mr-5 w-10 h-10 rounded-full object-cover cursor-pointer' src={avatar.url} /></Link>}
                         <i className="fas fa-search icon-styling"></i>
-                    </>}
+                    </>
+                }
             </div>
-        </nav>
+        </nav >
     )
 }
 

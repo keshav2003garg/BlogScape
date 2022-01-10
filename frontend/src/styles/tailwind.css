@@ -49,7 +49,7 @@
     /*------------------------------------ Styling Classes ------------------------------------ */
         .icon-styling{
             @apply text-2xl mx-2.5 cursor-pointer
-        }.icon-styling-container > i{
+        }.icon-styling-container > a >i{
             @apply text-3xl mx-2.5 cursor-pointer
         }
 
@@ -69,6 +69,14 @@
             @apply flex-around text-lg cursor-pointer w-[80%] font-josefin
         }.list-styling > li{
             @apply mx-2.5
+        }
+
+        .checkbox-styling{
+            @apply flex items-center flex-wrap text-base cursor-pointer
+        }.checkbox-styling > div{
+            @apply mx-2.5
+        }.checkbox-styling > div > label{
+            @apply mx-1 font-semibold font-josefin
         }
 
 

@@ -12,9 +12,11 @@ import {
     RESET_PASSWORD_RESEND_OTP__REQUEST, RESET_PASSWORD_RESEND_OTP__SUCCESS, RESET_PASSWORD_RESEND_OTP__FAIL,
     CHECK_USER_STATUS__REQUEST, CHECK_USER_STATUS__SUCCESS, CHECK_USER_STATUS__FAIL,
     LOGOUT__REQUEST, LOGOUT__SUCCESS, LOGOUT__FAIL,
+    UPDATE_USERDETAILS__REQUEST, UPDATE_USERDETAILS__SUCCESS, UPDATE_USERDETAILS__FAIL,
     CLEAR__ERRORS, CLEAR__MESSAGES
 } from '../constants/userConstants';
 
+import { SocialLinks } from 'social-links';
 
 
 const register = (name, username, email, password) => {
@@ -276,6 +278,76 @@ const logOut = () => {
 }
 
 
+const updateUserDetails = ({ avatarFile, name, username, email, password, categories, about, socials }) => {
+    const socialLinks = new SocialLinks();
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: UPDATE_USERDETAILS__REQUEST
+                })
+                const socialLink = {
+                    facebook: '',
+                    instagram: '',
+                    twitter: '',
+                    pinterest: ''
+                }
+                if (!avatarFile) {
+                    dispatch({
+                        type: UPDATE_USERDETAILS__FAIL,
+                        payload: "Please select your Profile Picture"
+                    })
+                    return;
+                }
+                if (socials.facebook != '') {
+                    const facebookLink = socialLinks.sanitize('facebook', socials.facebook);
+                    socialLink.facebook = facebookLink;
+                }
+                if (socials.instagram != '') {
+                    const instagramLink = socialLinks.sanitize('instagram', socials.instagram);
+                    socialLink.instagram = instagramLink;
+                }
+                if (socials.instagram != '') {
+                    const instagramLink = socialLinks.sanitize('instagram', socials.instagram);
+                    socialLink.instagram = instagramLink;
+                }
+                if (socials.twitter != '') {
+                    const twitterLink = socialLinks.sanitize('twitter', socials.twitter);
+                    socialLink.twitter = twitterLink;
+                }
+                if (socials.pinterest != '') {
+                    const pinterestLink = socialLinks.sanitize('linkedin', socials.pinterest);
+                    socialLink.pinterest = pinterestLink;
+                }
+                console.log(socialLink);
+                const imgData = new FormData();
+                imgData.append('file', avatarFile)
+                imgData.append('upload_preset', 'xoswttyc')
+                imgData.append('cloud_name', "doizgsvpt")
+                const response = await fetch("https://api.cloudinary.com/v1_1/doizgsvpt/image/upload", { method: "POST", body: imgData });
+                const { public_id, url } = await response.json();
+                const publicID = public_id;
+                const Url = url;
+                const avatar = { public_id: publicID, url: Url }
+                const { data } = await axios.put('http://localhost:5000/api/update-profile',
+                    { avatar, name, username, email, password, categories, about, socials: socialLink },
+                    { withCredentials: true }
+                );
+                dispatch({
+                    type: UPDATE_USERDETAILS__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: UPDATE_USERDETAILS__FAIL,
+                    payload: error.response.data.message
+                })
+            }
+        }
+    )
+}
+
+
 const changeEmailAtVerification = () => {
     return (
         async (dispatch) => {
@@ -302,4 +374,17 @@ const clearMessages = () => {
 }
 
 
-export { register, changeEmailAtVerification, registerationVerification, otpVericationFailed, resendOTP, login, forgotPassword, resetPasswordVerification, resetPasswordResendOTP, checkUserStatus, logOut, clearErrors, clearMessages };
+export {
+    register,
+    changeEmailAtVerification,
+    registerationVerification,
+    otpVericationFailed, resendOTP,
+    login,
+    forgotPassword,
+    resetPasswordVerification,
+    resetPasswordResendOTP,
+    checkUserStatus,
+    logOut,
+    updateUserDetails,
+    clearErrors, clearMessages
+};

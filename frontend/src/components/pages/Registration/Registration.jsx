@@ -23,8 +23,8 @@ const Registration = () => {
         dispatch(register(name, username, email, password));
     }
     const handleVerification = (e) => {
-        const userID = response.userId;
         e.preventDefault();
+        const userID = response.userId;
         dispatch(registerationVerification(otp, userID));
     }
     if (isAuthenticated == true) {

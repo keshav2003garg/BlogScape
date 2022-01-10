@@ -36,6 +36,17 @@ router.post('/register', async (req, res) => {
             username: username,
             email: email,
             password: securedPassword,
+            avatar: {
+                public_id: '',
+                url: ''
+            },
+            socials: {
+                facebook: '',
+                instagram: '',
+                pinterest: '',
+                twitter: ''
+            },
+            categories: [],
             otp: otp,
             otpExpiry: Date.now() + 15 * 60 * 1000
         });
@@ -165,7 +176,7 @@ router.post('/verify-otp/:userId', async (req, res) => {
 })
 
 
-router.get('/otp-verification-failed/:userId', async (req, res) => {
+router.get('/delete-user/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         if (!user) {
@@ -177,9 +188,9 @@ router.get('/otp-verification-failed/:userId', async (req, res) => {
         }
         await user.delete();
 
-        res.status(400).json({
+        res.status(200).json({
             success: true,
-            message: `OTP Verification Failed. You can create your account again`,
+            message: `User Deleted Successfully`,
             userId: req.params.userId
         })
     } catch (error) {
@@ -514,6 +525,74 @@ router.get('/logout', async (req, res) => {
         })
     }
 })
+
+
+router.put('/update-profile', isAuthenticated, async (req, res) => {
+    try {
+        const { avatar, username, name, email, password, categories, socials, about } = req.body;
+
+        const tempUser = await User.findById(req.user.id).select("+password");
+
+        if (email != tempUser.email) {
+            res.status(400).json({
+                success: false,
+                message: "You can't change your E-Mail Address",
+            })
+            return;
+        }
+        if (!about) {
+            res.status(400).json({
+                success: false,
+                message: "About section cannot be empty",
+            })
+            return;
+        }
+        if (categories.length == 0) {
+            res.status(400).json({
+                success: false,
+                message: "Please select atleast one category",
+            })
+            return;
+        }
+        if (!password) {
+            res.status(400).json({
+                success: false,
+                message: "Please enter password to check authenticity",
+            })
+            return;
+        }
+        const comparePassword = await bcrypt.compare(password, tempUser.password);
+        if (!comparePassword) {
+            res.status(401).json({
+                success: false,
+                message: "Wrong Password. Please enter correct password to update your details",
+            });
+            return;
+        };
+
+        const salt = await bcrypt.genSalt(10);
+        const securedPassword = await bcrypt.hash(password, salt);
+
+        const user = await User.findByIdAndUpdate(req.user.id, { avatar, username, name, email, categories, socials, about, password: securedPassword });
+
+        res.status(200).json({
+            success: true,
+            message: "Deatails Updated Successfully",
+            userDetail: user
+        })
+
+    } catch (error) {
+        if (!res.headersSent) {
+            res.status(500).json({
+                success: false,
+                message: error.message,
+            })
+        }
+    }
+})
+
+
+
 
 
 module.exports = router;

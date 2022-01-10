@@ -9,6 +9,7 @@ import {
     RESET_PASSWORD_VERIFICATION__REQUEST, RESET_PASSWORD_VERIFICATION__SUCCESS, RESET_PASSWORD_VERIFICATION__FAIL,
     RESET_PASSWORD_RESEND_OTP__REQUEST, RESET_PASSWORD_RESEND_OTP__SUCCESS, RESET_PASSWORD_RESEND_OTP__FAIL,
     CHECK_USER_STATUS__REQUEST, CHECK_USER_STATUS__SUCCESS, CHECK_USER_STATUS__FAIL,
+    UPDATE_USERDETAILS__REQUEST, UPDATE_USERDETAILS__SUCCESS, UPDATE_USERDETAILS__FAIL,
     LOGOUT__REQUEST, LOGOUT__SUCCESS, LOGOUT__FAIL,
     CLEAR__ERRORS, CLEAR__MESSAGES
 } from '../constants/userConstants';
@@ -21,13 +22,32 @@ import {
 
 
 
-const initialState = { isAuthenticated: false };
+const initialState = {
+    isAuthenticated: false, userDetails: {
+        userDetail: {
+            avatar: {
+                url: ''
+            },
+            socials: {
+                facebook: '',
+                instagram: '',
+                twitter: '',
+                pinterest: ''
+            },
+            name: '',
+            username: '',
+            email: '',
+            categories: []
+        }
+    }
+};
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case REGISTER__REQUEST:
         case OTP_VERIFICATION_FAILURE__REQUEST:
         case FORGOT_PASSWORD__REQUEST:
             return {
+                ...state,
                 loading: true,
                 isOTPsend: false
             }
@@ -59,6 +79,7 @@ const userReducer = (state = initialState, action) => {
         case GET_MY_POSTS__REQUEST:
         case LOGOUT__REQUEST:
         case CREATE_POST__REQUEST:
+        case UPDATE_USERDETAILS__REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -71,6 +92,7 @@ const userReducer = (state = initialState, action) => {
         case OTP_VERIFICATION_FAILURE__SUCCESS:
         case FORGOT_PASSWORD__SUCCESS:
             return {
+                ...state,
                 loading: false,
                 isOTPsend: true,
                 message: action.payload.message,
@@ -119,15 +141,20 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 message: action.payload.message,
-                response: action.payload
             }
         case CREATE_POST__SUCCESS:
             return {
+                ...state,
                 loading: false,
                 message: action.payload.message,
-                response: action.payload
             }
-
+        case UPDATE_USERDETAILS__SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message,
+                userDetails: action.payload
+            }
 
 
         case REGISTER__FAIL:
@@ -175,7 +202,9 @@ const userReducer = (state = initialState, action) => {
                 error: action.payload
             }
         case CREATE_POST__FAIL:
+        case UPDATE_USERDETAILS__FAIL:
             return {
+                ...state,
                 loading: false,
                 error: action.payload
             }
