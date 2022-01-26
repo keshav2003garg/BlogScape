@@ -1,8 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const RegisterForm = ({ credentials, setCredentials, handleRegistration }) => {
-    let history = useHistory();
     return (
         <form className='p-5 w-[30%] border border-slate-400 rounded-xl' onSubmit={handleRegistration}>
             <div className='m-4'>
@@ -36,7 +35,7 @@ const RegisterForm = ({ credentials, setCredentials, handleRegistration }) => {
             <div className='m-4 flex-center'>
                 <input className='p-2 w-full text-white font-lora bg-[teal] rounded-xl cursor-pointer' type="submit" value="Register" />
             </div>
-            <div className='text-center font-lora text-slate-500 cursor-pointer' onClick={() => { history.push('/login') }}>Already Registered? Login</div>
+            <Link to='/login' ><div className='text-center font-lora text-slate-500 cursor-pointer'>Already Registered? Login</div></Link>
         </form>
     )
 }

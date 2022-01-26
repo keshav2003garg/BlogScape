@@ -2,17 +2,17 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Loading from '../../layouts/Loading/Loading';
-import { changeEmailAtVerification, resendOTP } from '../../../actions/userActions';
+import { changeEmailAtVerification, otpVericationFailed, resendOTP } from '../../../actions/userActions';
 
 const OtpVerificationForm = ({ otp, setOtp, handleVerification }) => {
     const dispatch = useDispatch();
-    const { loading, response } = useSelector(state => state.user);
+    const { userId } = useSelector(state => state.user);
     const handleResendOTP = () => {
-        const userID = response.userId;
-        dispatch(resendOTP(userID));
+        dispatch(resendOTP(userId));
     }
     const handleChangeEmail = () => {
         dispatch(changeEmailAtVerification());
+        dispatch(otpVericationFailed(userId));
     }
     return (
         <form className='p-5 w-[30%] border border-slate-400 rounded-xl' onSubmit={handleVerification}>
@@ -28,7 +28,6 @@ const OtpVerificationForm = ({ otp, setOtp, handleVerification }) => {
             <div className='m-4 flex-center'>
                 <input className='p-2 w-full text-white font-lora bg-[teal] rounded-xl cursor-pointer' type="submit" value="Verify" />
             </div>
-            {loading ? <Loading /> : null}
         </form>
     )
 }

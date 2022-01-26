@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,7 +9,7 @@ import { forgotPassword, resetPasswordVerification } from '../../../actions/user
 const ForgotPassword = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { isOTPsend, isVerified, response, isAuthenticated } = useSelector(state => state.user);
+    const { isOTPsend, userId, isAuthenticated } = useSelector(state => state.user);
     const [email, setEmail] = useState('');
     const [resetDetails, setResetDetails] = useState({
         otp: '',
@@ -22,16 +22,17 @@ const ForgotPassword = () => {
     }
     const handleResetPasswordVerification = (e) => {
         e.preventDefault();
-        const userID = response.userId;
         const { otp, password, confirmPassword } = resetDetails;
-        dispatch(resetPasswordVerification(otp, password, confirmPassword, userID));
+        dispatch(resetPasswordVerification(otp, password, confirmPassword, userId));
     }
-    if (isAuthenticated == true) {
-        history.push('/');
-    }
+    useEffect(()=>{
+        if (isAuthenticated) {
+            history.push('/');
+        }
+    },[isAuthenticated])
     return (
         <div className='h-[calc(100vh-48px)] bg-cover flex-center' style={{ backgroundImage: "url(./images/login-bg.jpg)" }}>
-            {(isOTPsend == false || isOTPsend == undefined || isVerified == true) ?
+            {!isOTPsend ?
                 <ForgotPasswordForm email={email} setEmail={setEmail} handleForgotPassword={handleForgotPassword} />
                 :
                 <ResetPasswordForm resetDetails={resetDetails} setResetDetails={setResetDetails} handleResetPasswordVerification={handleResetPasswordVerification} />}

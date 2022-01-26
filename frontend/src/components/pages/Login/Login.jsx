@@ -8,7 +8,9 @@ import { login } from '../../../actions/userActions';
 const Login = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+
     const { isAuthenticated } = useSelector(state => state.user);
+
     const [credentials, setCredentials] = useState({
         username: '',
         password: ''
@@ -18,6 +20,7 @@ const Login = () => {
         const { username, password } = credentials;
         dispatch(login(username, password));
     }
+    
     useEffect(() => {
         if (isAuthenticated) {
             history.push('/');

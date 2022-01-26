@@ -8,7 +8,7 @@ const sentjwt = (res, user, message, statusCode) => {
         success: true,
         message: message,
         authToken: token
-    });
+    })
 }
 
 module.exports = sentjwt;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,13 +9,16 @@ import { register, registerationVerification } from '../../../actions/userAction
 const Registration = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { isOTPsend, isVerified, response, isAuthenticated } = useSelector(state => state.user);
+
+    const { isOTPsend, userId, isAuthenticated } = useSelector(state => state.user);
+
     const [credentials, setCredentials] = useState({
         name: '',
         username: '',
         email: '',
         password: ''
     });
+    
     const [otp, setOtp] = useState('');
     const handleRegistration = (e) => {
         e.preventDefault();
@@ -24,16 +27,18 @@ const Registration = () => {
     }
     const handleVerification = (e) => {
         e.preventDefault();
-        const userID = response.userId;
-        dispatch(registerationVerification(otp, userID));
+        dispatch(registerationVerification(otp, userId));
     }
-    if (isAuthenticated == true) {
-        history.push('/');
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            history.push('/');
+        }
+    }, [isAuthenticated])
+
 
     return (
         <div className='h-[calc(100vh-48px)] bg-cover flex-center' style={{ backgroundImage: "url(./images/register-bg.jpg)" }}>
-            {(isOTPsend == false || isOTPsend == undefined || isVerified == true) ?
+            {!isOTPsend ?
                 <RegisterForm credentials={credentials} setCredentials={setCredentials} handleRegistration={handleRegistration} />
                 :
                 <OtpVerificationForm otp={otp} setOtp={setOtp} handleVerification={handleVerification} />}

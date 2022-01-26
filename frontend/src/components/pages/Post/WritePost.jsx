@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { createPost } from '../../../actions/postActions';
+import { useAlert } from 'react-alert';
+
+import { createPost, clearMessages, clearErrors } from '../../../actions/postActions';
+import Loading from '../../layouts/Loading/Loading';
 
 const WritePost = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
-    const { isAuthenticated } = useSelector(state => state.user);
+    const alert = useAlert();
+    const { loading, message, error } = useSelector(state => state.posts);
+
     const [postDetails, setPostDetails] = useState({
         imgFile: '',
         title: '',
@@ -31,10 +34,15 @@ const WritePost = () => {
         dispatch(createPost(imgFile, title, description, setPostDetails, setPreviewImg));
     }
     useEffect(() => {
-        if (isAuthenticated == false) {
-            history.push('/login');
+        if (message) {
+            alert.success(message);
+            dispatch(clearMessages());
         }
-    }, [])
+        if (error) {
+            alert.error(error);
+            dispatch(clearErrors());
+        }
+    }, [dispatch, message, error])
     return (
         <div className='pt-24'>
             {previewImg && <div className="ml-40 mb-4 flex justify-start">
@@ -53,6 +61,7 @@ const WritePost = () => {
                 </div>
                 <button className='p-2 px-3 absolute top-[20px] right-[50px] text-white font-lora bg-[teal] rounded-xl cursor-pointer' type="submit">Publish</button>
             </form>
+            {loading ? <Loading /> : null}
         </div>
     )
 }

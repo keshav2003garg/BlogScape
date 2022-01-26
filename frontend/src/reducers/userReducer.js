@@ -11,40 +11,19 @@ import {
     CHECK_USER_STATUS__REQUEST, CHECK_USER_STATUS__SUCCESS, CHECK_USER_STATUS__FAIL,
     UPDATE_USERDETAILS__REQUEST, UPDATE_USERDETAILS__SUCCESS, UPDATE_USERDETAILS__FAIL,
     LOGOUT__REQUEST, LOGOUT__SUCCESS, LOGOUT__FAIL,
+    DELETE_USER__REQUEST, DELETE_USER__SUCCESS, DELETE_USER__FAIL,
+
     CLEAR__ERRORS, CLEAR__MESSAGES
 } from '../constants/userConstants';
 
-import {
-    CREATE_POST__REQUEST, CREATE_POST__SUCCESS, CREATE_POST__FAIL,
-    GET_ALL_POSTS__REQUEST, GET_ALL_POSTS__SUCCESS, GET_ALL_POSTS__FAIL,
-    GET_MY_POSTS__REQUEST, GET_MY_POSTS__SUCCESS, GET_MY_POSTS__FAIL,
-} from '../constants/postConstants';
 
 
-
-const initialState = {
-    isAuthenticated: false, userDetails: {
-        userDetail: {
-            avatar: {
-                url: ''
-            },
-            socials: {
-                facebook: '',
-                instagram: '',
-                twitter: '',
-                pinterest: ''
-            },
-            name: '',
-            username: '',
-            email: '',
-            categories: []
-        }
-    }
-};
+const initialState = { isAuthenticated: false };
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case REGISTER__REQUEST:
-        case OTP_VERIFICATION_FAILURE__REQUEST:
+        case RESEND_OTP__REQUEST:
+        case RESET_PASSWORD_RESEND_OTP__REQUEST:
         case FORGOT_PASSWORD__REQUEST:
             return {
                 ...state,
@@ -57,17 +36,7 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: true,
-                isVerified: false,
-                isOTPsend: undefined,
-                message: undefined
-            }
-        case RESEND_OTP__REQUEST:
-        case RESET_PASSWORD_RESEND_OTP__REQUEST:
-            return {
-                ...state,
-                loading: true,
-                isOTPsend: false,
-                message: undefined
+                isOTPsend: true,
             }
         case CHECK_USER_STATUS__REQUEST:
             return {
@@ -75,11 +44,10 @@ const userReducer = (state = initialState, action) => {
                 loading: true,
                 isAuthenticated: false,
             }
-        case GET_ALL_POSTS__REQUEST:
-        case GET_MY_POSTS__REQUEST:
         case LOGOUT__REQUEST:
-        case CREATE_POST__REQUEST:
         case UPDATE_USERDETAILS__REQUEST:
+        case OTP_VERIFICATION_FAILURE__REQUEST:
+        case DELETE_USER__REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -89,14 +57,13 @@ const userReducer = (state = initialState, action) => {
 
 
         case REGISTER__SUCCESS:
-        case OTP_VERIFICATION_FAILURE__SUCCESS:
         case FORGOT_PASSWORD__SUCCESS:
             return {
                 ...state,
                 loading: false,
                 isOTPsend: true,
                 message: action.payload.message,
-                response: action.payload
+                userId: action.payload.userId
             }
         case REGISTERATION_VERIFICATION__SUCCESS:
         case LOGIN__SUCCESS:
@@ -104,9 +71,9 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                isVerified: true,
+                isOTPsend: undefined,
                 message: action.payload.message,
-                response: action.payload
+                userId: undefined
             }
         case RESEND_OTP__SUCCESS:
         case RESET_PASSWORD_RESEND_OTP__SUCCESS:
@@ -115,50 +82,45 @@ const userReducer = (state = initialState, action) => {
                 loading: false,
                 isOTPsend: true,
                 message: action.payload.message,
-                response: action.payload
+                userId: action.payload.userId
             }
         case CHECK_USER_STATUS__SUCCESS:
             return {
                 ...state,
                 loading: false,
                 isAuthenticated: true,
-                userDetails: action.payload
-            }
-        case GET_ALL_POSTS__SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                posts: action.payload
-            }
-        case GET_MY_POSTS__SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                myPosts: action.payload
+                userDetails: action.payload.userDetail
             }
         case LOGOUT__SUCCESS:
             return {
                 ...state,
                 loading: false,
                 message: action.payload.message,
-            }
-        case CREATE_POST__SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                message: action.payload.message,
+                isAuthenticated: false,
+                userDetails: undefined,
             }
         case UPDATE_USERDETAILS__SUCCESS:
             return {
                 ...state,
                 loading: false,
                 message: action.payload.message,
-                userDetails: action.payload
+                userDetails: action.payload.userDetail
+            }
+        case OTP_VERIFICATION_FAILURE__SUCCESS:
+            return {
+                ...state,
+                loading: false
+            }
+        case DELETE_USER__SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                message: action.payload.message
             }
 
 
+
         case REGISTER__FAIL:
-        case OTP_VERIFICATION_FAILURE__FAIL:
         case FORGOT_PASSWORD__FAIL:
             return {
                 loading: false,
@@ -171,7 +133,6 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                isVerified: false,
                 isOTPsend: true,
                 error: action.payload
             }
@@ -189,25 +150,20 @@ const userReducer = (state = initialState, action) => {
                 loading: false,
                 isAuthenticated: false,
             }
-        case GET_ALL_POSTS__FAIL:
-        case GET_MY_POSTS__FAIL:
+        case LOGOUT__FAIL:
+        case UPDATE_USERDETAILS__FAIL:
+        case DELETE_USER__FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+        case OTP_VERIFICATION_FAILURE__FAIL:
             return {
                 ...state,
                 loading: false
             }
-        case LOGOUT__FAIL:
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
-        case CREATE_POST__FAIL:
-        case UPDATE_USERDETAILS__FAIL:
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+
 
 
         case CHANGE_EMAIL_AT_VERIFICATION:
@@ -228,6 +184,9 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 error: undefined
             }
+
+
+
         default:
             return state
     }

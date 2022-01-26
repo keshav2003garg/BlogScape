@@ -1,19 +1,22 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAlert } from 'react-alert';
 
 import Loading from './components/layouts/Loading/Loading';
 import { checkUserStatus, logOut, clearMessages, clearErrors } from './actions/userActions';
-import { getAllPosts, getMyPosts } from './actions/postActions';
+import { clearMyPosts } from './actions/postActions';
 import Navbar from './components/layouts/Navbar/Navbar';
+
 import Home from './components/pages/Home/Home';
 import Registration from './components/pages/Registration/Registration';
 import Login from './components/pages/Login/Login';
 import ForgotPassword from './components/pages/ForgotPassword/ForgotPassword';
 import WritePost from './components/pages/Post/WritePost';
 import MyPosts from './components/pages/MyPosts/MyPosts';
-import User from './components/pages/User/User'
+import User from './components/pages/User/User';
+import SinglePost from './components/pages/Post/SinglePost';
+import UpdatePost from './components/pages/Post/UpdatePost';
 
 
 const App = () => {
@@ -22,16 +25,15 @@ const App = () => {
 	const { loading, isAuthenticated, message, error } = useSelector(state => state.user);
 	const handleLogout = () => {
 		dispatch(logOut());
+		dispatch(clearMyPosts());
 	}
 	useEffect(() => {
-		dispatch(getAllPosts());
-		dispatch(getMyPosts());
 		dispatch(checkUserStatus());
-		if (message != undefined) {
+		if (message) {
 			alert.success(message);
 			dispatch(clearMessages());
 		}
-		if (error != undefined) {
+		if (error) {
 			alert.error(error);
 			dispatch(clearErrors());
 		}
@@ -45,11 +47,13 @@ const App = () => {
 					<Route exact path="/register"><Registration /></Route>
 					<Route exact path="/login"><Login /></Route>
 					<Route exact path="/forgot-password"><ForgotPassword /></Route>
-					<Route exact path='/write'><WritePost /></Route>
-					<Route exact path='/my-posts'><MyPosts /></Route>
-					<Route exact path='/me'><User /></Route>
+					<Route exact path="/posts/:id"><SinglePost /></Route>
+					{!loading && <Route exact path='/updatePost/:id'>{isAuthenticated ? <UpdatePost /> : <Redirect to='/login' />}</Route>}
+					{!loading && <Route exact path='/write'>{isAuthenticated ? <WritePost /> : <Redirect to='/login' />}</Route>}
+					{!loading && <Route exact path='/my-posts'>{isAuthenticated ? <MyPosts /> : <Redirect to='/login' />}</Route>}
+					{!loading && <Route exact path='/me'>{isAuthenticated ? <User /> : <Redirect to='/login' />}</Route>}
 				</Switch>
-				{loading == true ? <Loading /> : null}
+				{loading ? <Loading /> : null}
 			</Router>
 		</>
 	)

@@ -1,27 +1,24 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMyPosts } from '../../../actions/postActions';
 
 import Post from './Post/Post';
 
 const MyPost = () => {
-    const history = useHistory();
-    const { isAuthenticated } = useSelector(state => state.user);
-    const { posts } = useSelector(state => state.user.myPosts);
+    const dispatch = useDispatch();
+    const posts = useSelector(state => state.posts.myPosts);
     useEffect(() => {
-        if (isAuthenticated == false) {
-            history.push('/login');
-        }
+        dispatch(getMyPosts());
     }, [])
     return (
         <main className='flex-[9] flex-evenly flex-wrap bg-white'>
             {posts && posts.map((data) => {
                 return (
-                    <Post key={data._id} img={data.img} title={data.title} description={data.description} date={data.date} />
+                    <Post key={data._id} id={data._id} img={data.img} title={data.title} description={data.description} date={data.date} />
                 )
             })}
         </main>
     )
 }
 
-export default MyPost
+export default MyPost;

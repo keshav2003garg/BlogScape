@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
-import { updateUserDetails } from '../../../actions/userActions';
+import { deleteUser, updateUserDetails } from '../../../actions/userActions';
 
 const UserSettings = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
-    const { isAuthenticated, userDetails } = useSelector(state => state.user);
 
+    const { userDetails } = useSelector(state => state.user);
+    const { name, username, email, about, avatar, socials, categories, _id } = userDetails;
 
-    const { name, username, email, about, avatar, socials, categories } = userDetails.userDetail;
-    const [previewImg, setPreviewImg] = useState(avatar.url || '');
-
+    const [previewImg, setPreviewImg] = useState(avatar.url);
     const [userDetailsForm, setUserDetailsForm] = useState({
         avatarFile: previewImg,
         name: name,
@@ -29,8 +26,6 @@ const UserSettings = () => {
         }
     });
 
-
-
     const handleImage = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -40,34 +35,24 @@ const UserSettings = () => {
         }
         setUserDetailsForm({ ...userDetailsForm, avatarFile: file })
     }
-    const [checkBox, setCheckBox] = useState({})
     const checkBoxState = (e) => {
-        e.persist();
-        setCheckBox({ ...checkBox, [e.target.id]: e.target.checked })
+        if (e.target.checked) {
+            setUserDetailsForm({ ...userDetailsForm, categories: [...userDetailsForm.categories, e.target.id] });
+        }
     }
     const handleUserData = (e) => {
         e.preventDefault();
-        let categoryArray = [];
-        for (let i in checkBox) {
-            if (checkBox[i] == true) {
-                categoryArray.push(i);
-            }
-        }
-        console.log(categoryArray);
-        setUserDetailsForm({ ...userDetailsForm, categories: [...userDetailsForm.categories, ...categoryArray] })
-        console.log(userDetailsForm);
         dispatch(updateUserDetails(userDetailsForm));
     }
-    useEffect(() => {
-        if (!isAuthenticated) {
-            history.push('/login');
-        }
-    }, [dispatch])
+
+    const deleteUserAccount = () => {
+        dispatch(deleteUser(_id));
+    }
     return (
         <div className='flex-[9] p-5 pt-7'>
             <div className='mb-7 flex-between'>
                 <span className='text-3xl font-mono font-semibold text-[lightcoral]'>Update your Account</span>
-                <span className='text-sm font-mono font-semibold text-red-600 cursor-pointer'>Delete Account</span>
+                <span className='text-sm font-mono font-semibold text-red-600 cursor-pointer' onClick={deleteUserAccount}>Delete Account</span>
             </div>
             <form className='flex flex-col' onSubmit={handleUserData}>
                 <div className='m-4'>

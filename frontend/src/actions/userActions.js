@@ -13,11 +13,14 @@ import {
     CHECK_USER_STATUS__REQUEST, CHECK_USER_STATUS__SUCCESS, CHECK_USER_STATUS__FAIL,
     LOGOUT__REQUEST, LOGOUT__SUCCESS, LOGOUT__FAIL,
     UPDATE_USERDETAILS__REQUEST, UPDATE_USERDETAILS__SUCCESS, UPDATE_USERDETAILS__FAIL,
+    DELETE_USER__REQUEST, DELETE_USER__SUCCESS, DELETE_USER__FAIL,
+
     CLEAR__ERRORS, CLEAR__MESSAGES
 } from '../constants/userConstants';
 
 import { SocialLinks } from 'social-links';
 
+const host = "http://192.168.1.5:5000";
 
 const register = (name, username, email, password) => {
     return (
@@ -26,7 +29,7 @@ const register = (name, username, email, password) => {
                 dispatch({
                     type: REGISTER__REQUEST
                 })
-                const { data } = await axios.post('http://localhost:5000/api/register',
+                const { data } = await axios.post(`${host}/api/register`,
                     { name, username, email, password },
                     {
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -55,7 +58,7 @@ const registerationVerification = (otp, userId) => {
                 dispatch({
                     type: REGISTERATION_VERIFICATION__REQUEST
                 })
-                const { data } = await axios.post(`http://localhost:5000/api/verify-otp/${userId}`,
+                const { data } = await axios.post(`${host}/api/verify-otp/${userId}`,
                     { otp: otp },
                     {
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -84,15 +87,13 @@ const otpVericationFailed = (userId) => {
                 dispatch({
                     type: OTP_VERIFICATION_FAILURE__REQUEST
                 })
-                const { data } = await axios.get(`http://localhost:5000/api/otp-verification-failed/${userId}`);
+                await axios.get(`${host}/api/delete-user/${userId}`);
                 dispatch({
                     type: OTP_VERIFICATION_FAILURE__SUCCESS,
-                    payload: data,
                 })
             } catch (error) {
                 dispatch({
-                    type: OTP_VERIFICATION_FAILURE__FAIL,
-                    payload: error.response.data.message
+                    type: OTP_VERIFICATION_FAILURE__FAIL
                 })
             }
         }
@@ -107,7 +108,7 @@ const resendOTP = (userId) => {
                 dispatch({
                     type: RESEND_OTP__REQUEST
                 })
-                const { data } = await axios.get(`http://localhost:5000/api/resend-otp/${userId}`);
+                const { data } = await axios.get(`${host}/api/resend-otp/${userId}`);
                 dispatch({
                     type: RESEND_OTP__SUCCESS,
                     payload: data,
@@ -130,7 +131,7 @@ const login = (username, password) => {
                 dispatch({
                     type: LOGIN__REQUEST
                 })
-                const { data } = await axios.post('http://localhost:5000/api/login',
+                const { data } = await axios.post(`${host}/api/login`,
                     { username, password },
                     {
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -158,7 +159,7 @@ const forgotPassword = (email) => {
                 dispatch({
                     type: FORGOT_PASSWORD__REQUEST
                 })
-                const { data } = await axios.post('http://localhost:5000/api/forgot-password',
+                const { data } = await axios.post(`${host}/api/forgot-password`,
                     { email },
                     { headers: { "Content-Type": "application/json" } }
                 );
@@ -184,7 +185,7 @@ const resetPasswordVerification = (otp, password, confirmPassword, userId) => {
                 dispatch({
                     type: RESET_PASSWORD_VERIFICATION__REQUEST
                 })
-                const { data } = await axios.post(`http://localhost:5000/api/verify-reset-password/${userId}`,
+                const { data } = await axios.post(`${host}/api/verify-reset-password/${userId}`,
                     { otp, password, confirmPassword },
                     {
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -213,7 +214,7 @@ const resetPasswordResendOTP = (userId) => {
                 dispatch({
                     type: RESET_PASSWORD_RESEND_OTP__REQUEST
                 })
-                const { data } = await axios.get(`http://localhost:5000/api/resend-reset-password-otp/${userId}`);
+                const { data } = await axios.get(`${host}/api/resend-reset-password-otp/${userId}`);
                 dispatch({
                     type: RESET_PASSWORD_RESEND_OTP__SUCCESS,
                     payload: data,
@@ -229,14 +230,14 @@ const resetPasswordResendOTP = (userId) => {
 }
 
 
-const checkUserStatus = (username, password) => {
+const checkUserStatus = () => {
     return (
         async (dispatch) => {
             try {
                 dispatch({
                     type: CHECK_USER_STATUS__REQUEST
                 })
-                const { data } = await axios.get('http://localhost:5000/api/check-user-status',
+                const { data } = await axios.get(`${host}/api/check-user-status`,
                     { withCredentials: true }
                 );
                 dispatch({
@@ -261,7 +262,7 @@ const logOut = () => {
                 dispatch({
                     type: LOGOUT__REQUEST
                 })
-                const { data } = await axios.get(`http://localhost:5000/api/logout`,
+                const { data } = await axios.get(`${host}/api/logout`,
                     { withCredentials: true });
                 dispatch({
                     type: LOGOUT__SUCCESS,
@@ -329,7 +330,7 @@ const updateUserDetails = ({ avatarFile, name, username, email, password, catego
                 const publicID = public_id;
                 const Url = url;
                 const avatar = { public_id: publicID, url: Url }
-                const { data } = await axios.put('http://localhost:5000/api/update-profile',
+                const { data } = await axios.put(`${host}/api/update-profile`,
                     { avatar, name, username, email, password, categories, about, socials: socialLink },
                     { withCredentials: true }
                 );
@@ -340,6 +341,29 @@ const updateUserDetails = ({ avatarFile, name, username, email, password, catego
             } catch (error) {
                 dispatch({
                     type: UPDATE_USERDETAILS__FAIL,
+                    payload: error.response.data.message
+                })
+            }
+        }
+    )
+}
+
+
+const deleteUser = (userId) => {
+    return (
+        async (dispatch) => {
+            try {
+                dispatch({
+                    type: DELETE_USER__REQUEST
+                })
+                const { data } = await axios.get(`${host}/api/delete-user/${userId}`);
+                dispatch({
+                    type: DELETE_USER__SUCCESS,
+                    payload: data,
+                })
+            } catch (error) {
+                dispatch({
+                    type: DELETE_USER__FAIL,
                     payload: error.response.data.message
                 })
             }
@@ -386,5 +410,6 @@ export {
     checkUserStatus,
     logOut,
     updateUserDetails,
+    deleteUser,
     clearErrors, clearMessages
 };

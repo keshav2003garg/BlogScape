@@ -1,15 +1,14 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Loading from '../../layouts/Loading/Loading';
 import { changeEmailAtVerification, resetPasswordResendOTP } from '../../../actions/userActions';
 
 const ResetPasswordForm = ({ resetDetails, setResetDetails, handleResetPasswordVerification }) => {
     const dispatch = useDispatch();
-    const { loading, response } = useSelector(state => state.user);
+    const { userId } = useSelector(state => state.user);
+    
     const handleResendOTP = () => {
-        const userID = response.userId;
-        dispatch(resetPasswordResendOTP(userID));
+        dispatch(resetPasswordResendOTP(userId));
     }
     const handleChangeEmail = () => {
         dispatch(changeEmailAtVerification());
@@ -44,7 +43,6 @@ const ResetPasswordForm = ({ resetDetails, setResetDetails, handleResetPasswordV
                     <input className='p-2 w-full text-white font-lora bg-[teal] rounded-xl cursor-pointer' type="submit" value="Request OTP" />
                 </div>
             </form>
-            {loading ? <Loading /> : null}
         </>
     )
 }

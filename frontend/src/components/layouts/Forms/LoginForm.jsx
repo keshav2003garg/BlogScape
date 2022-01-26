@@ -1,8 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const LoginForm = ({ credentials, setCredentials, handleLogin }) => {
-    let history = useHistory();
     return (
         <form className='p-5 border border-slate-400 rounded-xl' onSubmit={handleLogin} >
             <div className='m-4'>
@@ -18,12 +17,12 @@ const LoginForm = ({ credentials, setCredentials, handleLogin }) => {
                     <label className='text-lg font-josefin' htmlFor="password">Password:</label>
                 </div>
                 <input className='p-1 pl-3 w-full border border-slate-400 rounded focus:outline-none font-lora' type="password" id="password" name='password' value={credentials.password} onChange={(e) => { setCredentials({ ...credentials, [e.target.name]: e.target.value }) }} />
-                <div className='text-right font-lora text-slate-400 cursor-pointer' onClick={() => { history.push('/forgot-password') }}>Forgot Password?</div>
+                <Link to='/forgot-password' ><div className='text-right font-lora text-slate-400 cursor-pointer'>Forgot Password?</div></Link>
             </div>
             <div className='m-4 flex-center'>
                 <input className='p-2 w-full text-white font-lora bg-[teal] rounded-xl cursor-pointer' type="submit" value="Login" />
             </div>
-            <div className='text-center font-lora text-slate-500 cursor-pointer' onClick={() => { history.push('/register') }}>New? Register Now</div>
+            <Link to='/register' ><div className='text-center font-lora text-slate-500 cursor-pointer'>New? Register Now</div></Link>
         </form>
     )
 }

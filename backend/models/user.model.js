@@ -60,12 +60,29 @@ const userSchema = new mongoose.Schema({
     otpExpiry: {
         type: Date
     },
+    noOfFailedAttemps: {
+        type: Number,
+        default: 0
+    },
+    noOfFailedAttempsExpiry: {
+        type: Date
+    },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0
+    },
+    failedLoginAttemptsExpiry: {
+        type: Date
+    },
     resetPasswordOtp: {
         type: Number,
     },
     resetPasswordExpiry: {
         type: Date,
-    }
+    },
+    blockedIPs: [{
+        type: String
+    }]
 });
 
 module.exports = mongoose.model('user', userSchema);

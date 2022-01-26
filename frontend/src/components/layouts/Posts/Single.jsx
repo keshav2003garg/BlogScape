@@ -1,23 +1,65 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import TimeAgo from 'react-timeago';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useAlert } from 'react-alert';
+
+import { clearErrors, clearMessages, deletePost, getMyPosts, getPostDetails } from '../../../actions/postActions';
+import Loading from '../Loading/Loading';
 
 const Single = () => {
+    const { id } = useParams();
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const alert = useAlert();
+    const { postDetails, loading, myPosts, message, error } = useSelector(state => state.posts);
+    const handleDeletePost = () => {
+        dispatch(deletePost(id));
+        history.push('/');
+    }
+    useEffect(() => {
+        dispatch(getPostDetails(id));
+        dispatch(getMyPosts());
+        if (message) {
+            alert.success(message);
+            dispatch(clearMessages());
+        }
+        if (error) {
+            alert.error(error);
+            dispatch(clearErrors());
+        }
+    }, [dispatch, message, error])
     return (
-        <div className='flex-[9] p-5 pr-0'>
-            <div className='mb-3'>
-                <img className='w-full h-[530px] rounded' src="https://images.pexels.com/photos/6685428/pexels-photo-6685428.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500" />
-                <h1 className='mt-2 pl-2 flex-between text-center font-josefin text-3xl font-semibold'>Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                    <div className='icon-styling-container-sm'>
-                        <i className="fas fa-edit text-green-900"></i>
-                        <i className="fas fa-trash-alt text-red-600"></i>
+
+        <>
+            {loading ?
+                <Loading />
+                :
+                <div className='flex-[9] p-5 pr-0'>
+                    <div className='mb-3'>
+                        <img className='w-full h-[530px] rounded' src={postDetails && postDetails.img.url} />
+                        <h1 className='mt-2 pl-2 flex-between text-center font-josefin text-3xl font-semibold'>{postDetails && postDetails.title}
+                            {myPosts.map((data) => {
+                                return (
+                                    id == data._id ?
+                                        <div key={data._id} className='icon-styling-container-sm'>
+                                            <Link to={`/updatePost/${id}`} ><i className="fas fa-edit text-green-900 text-xl"></i></Link>
+                                            <i className="fas fa-trash-alt text-red-600" onClick={handleDeletePost}></i>
+                                        </div>
+                                        :
+                                        null
+                                )
+                            })}
+                        </h1>
                     </div>
-                </h1>
-            </div>
-            <div className='mb-3 px-1 flex-between font-varelaRound text-[#b39656]'>
-                <span>Author: <b>Keshav</b></span>
-                <span><b>1 hour ago</b></span>
-            </div>
-            <p className='px-1 text-lg font-lora text-[#666] break-all first-letter:text-3xl first-letter:font-semibold first-letter:ml-5'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Id facilis debitis neque distinctio iure a consequatur quasi suscipit reiciendis. Consectetur repellat unde sapiente placeat, reprehenderit quaerat debitis id eos rem eveniet explicabo laudantium enim magnam distinctio laboriosam expedita aliquid dolorum officiis impedit ex facere, nihil iste aspernatur? Omnis ipsa rerum fugiat ab. Ea facere obcaecati aspernatur eos distinctio illum rerum, sunt quia, fuga facilis cumque natus consectetur, sequi porro officia? Optio porro, voluptate dolorum enim fugiat deserunt laudantium quam inventore pariatur totam aspernatur odit ea asperiores. Quo ut, iure numquam reiciendis esse similique a deserunt quidem provident aut repellat explicabo quaerat, deleniti ipsa sunt. Consectetur fugiat reiciendis accusantium aut possimus? Ea laudantium suscipit illum, repellendus nihil aperiam veritatis reprehenderit, excepturi dignissimos eveniet mollitia repudiandae nam. Commodi maxime officiis libero ad repellat praesentium odio laboriosam beatae debitis, repellendus architecto, porro dolorem sequi? Dolor quia aliquid praesentium modi sequi ullam tempora obcaecati enim sunt, eos sapiente temporibus accusamus molestias minus nobis similique! Ab voluptas cumque voluptatum placeat laboriosam vitae, distinctio quod nesciunt dignissimos possimus repellendus, repudiandae quia eaque sequi minus et voluptate quae autem. Repellat aliquid, amet nostrum laborum tempore eveniet reprehenderit atque voluptas reiciendis cupiditate quasi voluptate deleniti ea libero. Blanditiis facere distinctio perferendis alias cum esse id deleniti consequuntur vero harum aliquid, tempora, consectetur velit. Earum esse nam, libero voluptate accusantium enim qui, sequi ducimus voluptates assumenda ullam laudantium deserunt, tenetur ea. Dignissimos quasi dolorem et nihil maiores reprehenderit eveniet animi, asperiores aspernatur eos ut culpa. Rem, autem et. Nam maxime unde nihil illo in at, ipsum mollitia, animi accusantium dicta natus saepe. Repellendus quibusdam dignissimos dolorem eius optio sit, veritatis officia deleniti quo suscipit inventore reiciendis nostrum fuga nisi quae quod praesentium officiis necessitatibus beatae. Nihil dolorem a numquam aut veniam porro consequuntur quis laborum facere quos ipsam nisi omnis, maxime id, adipisci consectetur. Culpa tempore ducimus, consequuntur placeat expedita ullam facilis, alias minima dolores nulla dicta nam rem, odit provident? Nulla est tempore maiores deleniti, reprehenderit cum perferendis repellat labore aspernatur incidunt id ad illo error ut in quo magnam unde, ratione laudantium, excepturi dolor quidem fugiat quibusdam. Fugiat voluptas provident quisquam tenetur labore id hic, iusto saepe laudantium quo eligendi necessitatibus voluptatem. Modi rerum, non natus tempore veniam ipsum voluptatem sequi quod laboriosam debitis voluptas praesentium tenetur. Iure ab aspernatur quod impedit itaque eius id laudantium expedita at aperiam nisi dolore iusto porro inventore unde excepturi quidem, autem laboriosam molestias corporis perspiciatis maiores! Recusandae odit sit id praesentium cumque quae nihil, exercitationem mollitia minima consequuntur necessitatibus veritatis saepe nulla modi dicta repudiandae dolorem maxime illo voluptatum doloremque omnis autem neque accusantium? Possimus, ducimus dolor. Ex reiciendis nostrum ea, animi, voluptas fugiat autem praesentium quidem optio quia consequatur nisi illum pariatur quisquam consectetur facere nam deleniti est beatae, saepe ut voluptatem? Maiores et porro animi ipsa voluptatibus, commodi impedit facilis fugiat doloribus rem voluptas corrupti nulla veritatis a perspiciatis vel ratione quam assumenda mollitia dignissimos, iusto saepe. Officia nesciunt suscipit laboriosam voluptatem sunt sed inventore maxime eaque quaerat?</p>
-        </div>
+                    <div className='mb-3 px-1 flex-between font-varelaRound text-[#b39656]'>
+                        <span>Author: <b>{postDetails && postDetails.user.name}</b></span>
+                        <span><b><TimeAgo date={postDetails && postDetails.date} /></b></span>
+                    </div>
+                    <p className='px-1 text-lg font-lora text-[#666] break-all first-letter:text-3xl first-letter:font-semibold first-letter:ml-5'>{postDetails && postDetails.description}</p>
+                </div>}
+        </>
     )
 }
 

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
     const { userDetails } = useSelector(state => state.user);
-    const { about, avatar, categories, socials } = userDetails.userDetail;
+    const { about, avatar, categories, socials } = userDetails;
     return (
         <>
             {!avatar.url && !about && categories.length == 0 && socials.facebook == '' && socials.twitter == '' && socials.pinterest == '' && socials.instagram == '' ? null : < aside className='m-5 pb-8 flex-[3] flex flex-col bg-[#fdfbfb]'>
