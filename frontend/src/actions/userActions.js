@@ -20,7 +20,7 @@ import {
 
 import { SocialLinks } from 'social-links';
 
-const host = "http://192.168.1.5:5000";
+const host = process.env.REACT_APP_HOST;
 
 const register = (name, username, email, password) => {
     return (

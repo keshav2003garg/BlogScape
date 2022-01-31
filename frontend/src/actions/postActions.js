@@ -11,7 +11,7 @@ import {
     CLEAR__ERRORS, CLEAR__MESSAGES
 } from '../constants/postConstants';
 
-const host = "http://192.168.1.5:5000";
+const host = process.env.REACT_APP_HOST;
 
 const createPost = (imgFile, title, description, setPostDetails, setPreviewImg) => {
     return (

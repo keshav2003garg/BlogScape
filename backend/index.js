@@ -12,7 +12,7 @@ dotenv.config({ path: ".env.local" });
 connectToMongo();
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET })
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://192.168.1.5:3000'],
+  origin: ['http://localhost:3000'],
   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'],
   credentials: true
 }));

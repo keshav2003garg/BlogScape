@@ -3,7 +3,7 @@ const router = express.Router();
 
 const sendEmail = require('../utils/sendEmail');
 const sendjwt = require('../utils/sendjwt');
-const generateOTP = require('../utils/generateOtp');
+const generateOTP = require('../utils/generateOTP');
 const { generateHash, matchPassword } = require('../utils/passwordHandler');
 const sendResponse = require('../utils/sendResponse');
 const asyncHandler = require('../utils/asyncHandler');
