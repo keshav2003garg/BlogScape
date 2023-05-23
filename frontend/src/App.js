@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAlert } from 'react-alert';
 
@@ -23,6 +23,7 @@ const App = () => {
 	const dispatch = useDispatch();
 	const alert = useAlert();
 	const { loading, isAuthenticated, message, error } = useSelector(state => state.user);
+	const [isVisible, setIsVisible] = useState(true);
 	const handleLogout = () => {
 		dispatch(logOut());
 		dispatch(clearMyPosts());
@@ -37,22 +38,30 @@ const App = () => {
 			alert.error(error);
 			dispatch(clearErrors());
 		}
+		window.addEventListener("scroll",()=>{
+			setIsVisible(window.pageYOffset < 10);
+		})
+		return () => {
+			window.removeEventListener("scroll",()=>{
+				setIsVisible(window.pageYOffset < 10);
+			});
+		}
 	}, [dispatch, message, error])
 	return (
 		<>
 			<Router>
-				<Navbar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
-				<Switch >
-					<Route exact path="/"><Home /></Route>
-					<Route exact path="/register"><Registration /></Route>
-					<Route exact path="/login"><Login /></Route>
-					<Route exact path="/forgot-password"><ForgotPassword /></Route>
-					<Route exact path="/posts/:id"><SinglePost /></Route>
-					{!loading && <Route exact path='/updatePost/:id'>{isAuthenticated ? <UpdatePost /> : <Redirect to='/login' />}</Route>}
-					{!loading && <Route exact path='/write'>{isAuthenticated ? <WritePost /> : <Redirect to='/login' />}</Route>}
-					{!loading && <Route exact path='/my-posts'>{isAuthenticated ? <MyPosts /> : <Redirect to='/login' />}</Route>}
-					{!loading && <Route exact path='/me'>{isAuthenticated ? <User /> : <Redirect to='/login' />}</Route>}
-				</Switch>
+				{<Navbar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />}
+				<Routes >
+					<Route exact path="/" element={<Home />}></Route>
+					<Route exact path="/register" element={<Registration />}></Route>
+					<Route exact path="/login" element={<Login />}></Route>
+					<Route exact path="/forgot-password" element={<ForgotPassword />}></Route>
+					<Route exact path="/posts/:id" element={<SinglePost />}></Route>
+					{!loading && <Route exact path='/updatePost/:id' element={isAuthenticated ? <UpdatePost /> : <Navigate to='/login' />}></Route>}
+					{!loading && <Route exact path='/write' element={isAuthenticated ? <WritePost /> : <Navigate to='/login' />}></Route>}
+					{!loading && <Route exact path='/my-posts' element={isAuthenticated ? <MyPosts /> : <Navigate to='/login' />}></Route>}
+					{!loading && <Route exact path='/me' element={isAuthenticated ? <User /> : <Navigate to='/login' />}></Route>}
+				</Routes>
 				{loading ? <Loading /> : null}
 			</Router>
 		</>

@@ -25,7 +25,7 @@ const UserSettings = () => {
             pinterest: socials.pinterest
         }
     });
-
+    console.log(userDetailsForm)
     const handleImage = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();

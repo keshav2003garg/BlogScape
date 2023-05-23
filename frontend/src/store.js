@@ -1,34 +1,30 @@
-import { createStore, applyMiddleware } from "redux";
-import thunk from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query'
+import storage from 'redux-persist/lib/storage'
+import { persistReducer, 
+    persistStore, 
+    FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER
+} from 'redux-persist'
 import rootReducer from "./reducers/index.js";
 
-const middleware = [thunk];
 
-const loadState = () => {
-    try {
-        const serializedState = localStorage.getItem('state');
-        if (serializedState === null) {
-            return undefined;
-        }
-        return JSON.parse(serializedState);
-    } catch (e) {
-        return undefined;
-    }
-}
+const persistedState = persistReducer({ key: 'state', storage: storage }, rootReducer);
+const store = configureStore({
+    reducer: persistedState,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
+});
+const persistor = persistStore(store);
+setupListeners(store.dispatch)
 
-const saveState = (state) => {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
-}
-
-const persistedState = loadState();
-
-const store = createStore(rootReducer, persistedState, composeWithDevTools(applyMiddleware(...middleware)))
-
-store.subscribe(() => {
-    saveState(store.getState());
-})
-
-
+export { persistor };
 export default store;

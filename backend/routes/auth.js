@@ -122,7 +122,7 @@ router.get('/delete-user/:userId', asyncHandler(async (req, res, next) => {
         return next(new ErrorHandler(404, "Invalid UserID"));
     }
 
-    await user.delete();
+    await User.findByIdAndDelete(req.params.userId);
 
     sendResponse(res, 200, "User Deleted Successfully", { userId: req.params.userId });
 }))
@@ -339,13 +339,13 @@ router.put('/update-profile', isAuthenticated, asyncHandler(async (req, res, nex
         return next(new ErrorHandler(400, "You can't change your E-Mail Address"));
     }
     const isUsernameExists = await User.findOne({ username });
-    if (isUsernameExists) {
+    if (isUsernameExists && username != tempUser.username) {
         return next(new ErrorHandler(400, "Username already taken"));
     }
     if (!password) {
         return next(new ErrorHandler(400, "Please enter password to check authenticity"));
     }
-    const isPasswordMatched = await matchPassword(password, user.password);
+    const isPasswordMatched = await matchPassword(password, tempUser.password);
     if (!isPasswordMatched) {
         return next(new ErrorHandler(401, "Wrong Password. Please enter correct password to update your details"));
     };

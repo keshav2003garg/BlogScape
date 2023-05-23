@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RegisterForm from '../../layouts/Forms/RegisterForm';
@@ -8,7 +8,7 @@ import { register, registerationVerification } from '../../../actions/userAction
 
 const Registration = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
 
     const { isOTPsend, userId, isAuthenticated } = useSelector(state => state.user);
 
@@ -31,7 +31,7 @@ const Registration = () => {
     }
     useEffect(() => {
         if (isAuthenticated) {
-            history.push('/');
+            history('/');
         }
     }, [isAuthenticated])
 

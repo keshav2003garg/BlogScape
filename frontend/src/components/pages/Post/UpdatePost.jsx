@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAlert } from 'react-alert';
 
@@ -9,7 +9,7 @@ import Loading from '../../layouts/Loading/Loading';
 const UpdatePost = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
     const alert = useAlert();
     const { postDetails, loading, message, error } = useSelector(state => state.posts);
     const [updatePost, setUpdatePost] = useState({
@@ -17,7 +17,7 @@ const UpdatePost = () => {
         description: '',
     })
     const handleUpdatePost = () => {
-        history.push(`/posts/${id}`);
+        history(`/posts/${id}`);
     }
     useEffect(() => {
         dispatch(getPostDetails(id));

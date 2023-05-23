@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import LoginForm from '../../layouts/Forms/LoginForm';
@@ -7,7 +7,7 @@ import { login } from '../../../actions/userActions';
 
 const Login = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
 
     const { isAuthenticated } = useSelector(state => state.user);
 
@@ -23,7 +23,7 @@ const Login = () => {
     
     useEffect(() => {
         if (isAuthenticated) {
-            history.push('/');
+            history('/');
         }
     }, [isAuthenticated])
 

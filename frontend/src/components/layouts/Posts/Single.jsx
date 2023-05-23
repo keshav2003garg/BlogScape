@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,12 +11,12 @@ import Loading from '../Loading/Loading';
 const Single = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
     const alert = useAlert();
     const { postDetails, loading, myPosts, message, error } = useSelector(state => state.posts);
     const handleDeletePost = () => {
         dispatch(deletePost(id));
-        history.push('/');
+        history('/');
     }
     useEffect(() => {
         dispatch(getPostDetails(id));

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ForgotPasswordForm from '../../layouts/Forms/ForgotPasswordForm';
@@ -8,7 +8,7 @@ import { forgotPassword, resetPasswordVerification } from '../../../actions/user
 
 const ForgotPassword = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
+    const history = useNavigate();
     const { isOTPsend, userId, isAuthenticated } = useSelector(state => state.user);
     const [email, setEmail] = useState('');
     const [resetDetails, setResetDetails] = useState({
@@ -27,7 +27,7 @@ const ForgotPassword = () => {
     }
     useEffect(()=>{
         if (isAuthenticated) {
-            history.push('/');
+            history('/');
         }
     },[isAuthenticated])
     return (

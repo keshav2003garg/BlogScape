@@ -30,7 +30,7 @@ const createPost = (imgFile, title, description, setPostDetails, setPreviewImg) 
                 const Url = url;
                 const img = { public_id: publicID, url: Url }
                 const date = Date.now();
-                const { data } = await axios.post('${host}/api/posts/create-post',
+                const { data } = await axios.post(`${host}/api/posts/create-post`,
                     { img, title, description, date },
                     {
                         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
