@@ -7,7 +7,7 @@ This is a feature-rich MERN (MongoDB, Express.js, React.js, Node.js) stack appli
 1. Navigate to the `backend` folder: `cd backend`.
 2. Install the required dependencies: `npm install`.
 3. Create a `.env.local` file in the root of the `backend` folder.
-4. Set the following environment variables in the `.env` file:
+4. Set the following environment variables in the `.env.local` file:
 
 ```plaintext
 mongoURI = <your_mongodb_uri>
